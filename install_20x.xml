@@ -3,7 +3,7 @@
 <modification xmlns="http://www.simplemachines.org/xml/modification" xmlns:smf="http://www.simplemachines.org/">
 <id>Dougiefresh:SelectiveCensor</id>
 <name>Selective Whole-Word Checking for Censor</name>
-<version>1.0</version>
+<version>1.0.1</version>
 
 <!-------------------------------------------------------------------------->
 <!-- Source file modifications                                            -->
@@ -101,7 +101,7 @@
 	echo ']]></add>
 	</operation>
 	<operation>
-		<search position="before"><![CDATA[document.getElementById("moreCensoredWords_link").style.display = ""; ]]></search>
+		<search position="before"><![CDATA[document.getElementById("moreCensoredWords_link").style.display = "";]]></search>
 		<add><![CDATA[
 						var censored_count = ', count($context['censored_words']), ';]]></add>
 	</operation>

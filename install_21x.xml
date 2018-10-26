@@ -1,0 +1,143 @@
+<?xml version="1.0"?>
+<!DOCTYPE modification SYSTEM "http://www.simplemachines.org/xml/modification">
+<modification xmlns="http://www.simplemachines.org/xml/modification" xmlns:smf="http://www.simplemachines.org/">
+<id>Dougiefresh:SelectiveCensor</id>
+<name>Selective Whole-Word Checking for Censor</name>
+<version>1.1</version>
+
+<!-------------------------------------------------------------------------->
+<!-- Source file modifications                                            -->
+<!-------------------------------------------------------------------------->
+<file name="$sourcedir/Load.php">
+	<!-- censorText function -->
+	<operation>
+		<search position="before"><![CDATA[static $censor_vulgar = null, $censor_proper]]></search>
+		<add><![CDATA[, $censor_whole, $whole_vulgar, $whole_proper]]></add>
+	</operation>
+	<operation>
+		<search position="before"><![CDATA[$censor_proper = explode("\n", $modSettings['censor_proper']);]]></search>
+		<add><![CDATA[
+		$censor_whole = explode("\n", $modSettings['censor_whole']);
+		$whole_vulgar = $whole_proper = array();]]></add>
+	</operation>
+	<operation>
+		<search position="after"><![CDATA[if (!empty($modSettings['censorWholeWord']))]]></search>
+		<add><![CDATA[//]]></add>
+	</operation>
+	<operation>
+		<search position="replace"><![CDATA[$censor_vulgar[$i] = str_replace(array('\\\\\\*', '\\*', '&', '\''), array('[*]', '[^\s]*?', '&amp;', '&#039;'), preg_quote($censor_vulgar[$i], '/'));
+				$censor_vulgar[$i] = '/(?<=^|\W)' . $censor_vulgar[$i] . '(?=$|\W)/' . (empty($modSettings['censorIgnoreCase']) ? '' : 'i') . ((empty($modSettings['global_character_set']) ? $txt['lang_character_set'] : $modSettings['global_character_set']) === 'UTF-8' ? 'u' : '');]]></search>
+		<add><![CDATA[if (!empty($censor_whole[$i]))
+				{
+					$whole_vulgar[$i] = str_replace(array('\\\\\\*', '\\*', '&', '\''), array('[*]', '[^\s]*?', '&amp;', '&#039;'), preg_quote($censor_vulgar[$i], '/'));
+					$whole_vulgar[$i] = '/(?<=^|\W)' . $whole_vulgar[$i] . '(?=$|\W)/' . (empty($modSettings['wholeIgnoreCase']) ? '' : 'i') . ((empty($modSettings['global_character_set']) ? $txt['lang_character_set'] : $modSettings['global_character_set']) === 'UTF-8' ? 'u' : '');
+					$whole_proper[$i] = $censor_proper[$i];
+					unset($censor_proper[$i], $censor_vulgar[$i]);
+				}]]></add>
+	</operation>
+	<operation>
+		<search position="replace"><![CDATA[if (empty($modSettings['censorWholeWord']))
+		$text = empty($modSettings['censorIgnoreCase']) ? str_ireplace($censor_vulgar, $censor_proper, $text) : str_replace($censor_vulgar, $censor_proper, $text);
+	else
+		$text = preg_replace($censor_vulgar, $censor_proper, $text);]]></search>
+		<add><![CDATA[if (!empty($censor_vulgar))
+		$text = empty($modSettings['censorIgnoreCase']) ? str_ireplace($censor_vulgar, $censor_proper, $text) : str_replace($censor_vulgar, $censor_proper, $text);
+	if (!empty($whole_vulgar))
+		$text = preg_replace($whole_vulgar, $whole_proper, $text);]]></add>
+	</operation>
+</file>
+<file name="$sourcedir/ManagePosts.php">
+	<!-- SetCensor function -->
+	<operation>
+		<search position="before"><![CDATA[$censored_proper = $_POST['censor_proper'];]]></search>
+		<add><![CDATA[
+				$censored_temp = $_POST['censor_whole'];]]></add>
+	</operation>
+	<operation>
+		<search position="before"><![CDATA[$censored_proper = explode("\n", strtr($_POST['censor_proper'], array("\r" => '')));]]></search>
+		<add><![CDATA[
+				$censored_temp = explode("\n", strtr($_POST['censor_whole'], array("\r" => '')));]]></add>
+	</operation>
+	<operation>
+		<search position="after"><![CDATA[// Set the new arrays and settings in the database.]]></search>
+		<add><![CDATA[// Build the "whole censored word" flag array:
+		$censored_whole = array();
+		foreach ($censored_vulgar as $i => $value)
+			$censored_whole[$i] = '0';
+		foreach ($censored_temp as $i)
+			$censored_whole[$i] = '1';
+
+		]]></add>
+	</operation>
+	<operation>
+		<search position="before"><![CDATA['censor_proper' => implode("\n", $censored_proper),]]></search>
+		<add><![CDATA[
+			'censor_whole' => implode("\n", $censored_whole),]]></add>
+	</operation>
+	<operation>
+		<search position="before"><![CDATA[$censor_proper = explode("\n", $modSettings['censor_proper']);]]></search>
+		<add><![CDATA[
+	$censor_whole = explode("\n", $modSettings['censor_whole']);]]></add>
+	</operation>
+	<operation>
+		<search position="replace"><![CDATA[$context['censored_words'][$smcFunc['htmlspecialchars'](trim($censor_vulgar[$i]))] = isset($censor_proper[$i]) ? $smcFunc['htmlspecialchars']($censor_proper[$i]) : '';]]></search>
+		<add><![CDATA[$context['censored_words'][] = array(
+			'vulgar' => $smcFunc['htmlspecialchars'](trim($censor_vulgar[$i])),
+			'proper' => isset($censor_proper[$i]) ? $smcFunc['htmlspecialchars']($censor_proper[$i]) : '',
+			'whole' => !empty($censor_whole[$i]),
+		);]]></add>
+	</operation>
+	<operation>
+		<search position="before"><![CDATA[$context['sub_template'] = 'edit_censored';]]></search>
+		<add><![CDATA[
+	$context['javascript_vars']['censored_count'] = count($context['censored_words']) + 1;]]></add>
+	</operation>
+</file>
+
+<!-------------------------------------------------------------------------->
+<!-- Theme file modifications                                             -->
+<!-------------------------------------------------------------------------->
+<file name="$themedir/Admin.template.php">
+	<!-- template_edit_censored function -->
+	<operation>
+		<search position="before"><![CDATA[<p>', $txt['admin_censored_where'], ]]></search>
+		<add><![CDATA['  ', $txt['admin_censored_checkbox'], ]]></add>
+	</operation>
+	<operation>
+		<search position="replace"><![CDATA[foreach ($context['censored_words'] as $vulgar => $proper)]]></search>
+		<add><![CDATA[foreach ($context['censored_words'] as $i => $word)]]></add>
+	</operation>
+	<operation>
+		<search position="replace"><![CDATA[<input type="text" name="censor_vulgar[]" value="', $vulgar, '" size="30"> =&gt; <input type="text" name="censor_proper[]" value="', $proper, '" size="30">]]></search>
+		<add><![CDATA[<input type="text" name="censor_vulgar[]" value="', $word['vulgar'], '" size="30"> =&gt; <input type="text" name="censor_proper[]" value="', $word['proper'], '" size="30"> <input type="checkbox" name="censor_whole[]" value="', $i, '" ', empty($word['whole']) ? '' : ' checked="checked"', ' class="input_check" />]]></add>
+	</operation>
+	<operation>
+		<search position="before"><![CDATA[<input type="text" name="censor_proper[]" size="30" class="input_text">]]></search>
+		<add><![CDATA[ <input type="checkbox" name="censor_whole[]" value="', count($context['censored_words']) + 1, '" class="input_check" />]]></add>
+	</operation>
+	<operation>
+		<search position="before"><![CDATA[<input type="checkbox" name="allow_no_censored" value="1" id="allow_no_censored"', empty($modSettings['allow_no_censored']) ? '' : ' checked', ' class="input_check">
+									</dd>]]></search>
+		<add><![CDATA['; /* Start Selective Word Censor]]></add>
+	</operation>
+	<operation>
+		<search position="after"><![CDATA[
+									<dt>
+										<strong><label for="censorIgnoreCase_check">', $txt['censor_case'], ':</label></strong>]]></search>
+		<add><![CDATA[ /* End Selective Word Censor */
+	echo ']]></add>
+	</operation>
+	<operation>
+		<search position="replace"><![CDATA[onclick="addNewWord(); return false;"]]></search>
+		<add><![CDATA[onclick="addNewWord(censored_count); censored_count = censored_count + 1; return false;"]]></add>
+	</operation>
+</file>
+<file name="$themedir/scripts/admin.js">
+	<operation>
+		<search position="replace"><![CDATA[<input type="text" name="censor_proper[]" size="30" class="input_text"><' + '/div><div id="moreCensoredWords"><' + '/div>');]]></search>
+		<add><![CDATA[<input type="text" name="censor_proper[]" size="30" class="input_text"> <input type="checkbox" name="censor_whole[]" value="' + censored_count + '" class="input_check" /><' + '/div><div id="moreCensoredWords"><' + '/div>');
+	window.censored_count = window.censored_count + 1;]]></add>
+	</operation>
+	
+</file>
+</modification>

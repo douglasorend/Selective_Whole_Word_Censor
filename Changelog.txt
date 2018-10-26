@@ -1,3 +1,6 @@
+v1.1 - March 23rd, 2016
+o Added support for SMF 2.1 Beta 2.
+
 v1.0.1 - March 21st, 2016
 o Fixed [b]Admin.template.php[/b] install error of extra space in search operation.
 

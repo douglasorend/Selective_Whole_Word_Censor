@@ -1,26 +1,30 @@
-[hr]
-[center][color=red][size=16pt][b]SELECTIVE WHOLE WORD CENSOR v1.3[/b][/size][/color]
-[url=http://www.simplemachines.org/community/index.php?action=profile;u=253913][b]By Dougiefresh[/b][/url] -> [url=http://custom.simplemachines.org/mods/index.php?mod=4100]Link to Mod[/url]
-[/center]
-[hr]
+-------
 
-[color=blue][b][size=12pt][u]Introduction[/u][/size][/b][/color]
+# SELECTIVE WHOLE WORD CENSOR v1.3
+
+[**By Dougiefresh**](http://www.simplemachines.org/community/index.php?action=profile;u=253913) -> [Link to Mod](http://custom.simplemachines.org/mods/index.php?mod=4100)
+
+-------
+
+## Introduction
 This mod changes the censor functionality of the forum so that the admin can choose whether a word is censored on a whole-word basis or a partial basis, since there are some words that should be filtered in every possible permutation, and other words that can be part of a regular, non-censored word (like, hypothetically, "danger").
 
-[color=blue][b][size=12pt][u]Admin Settings[/u][/size][/b][/color]
-On the [b]Admin[/b] -> [b]Forum[/b] -> [b]Posts and Topics[/b] -> [b]Censored Words[/b] page, a checkbox is added beside each line to indicate whether the word specified is searched for on a whole-word basis or not.
+## Admin Settings
+On the **Admin** -> **Forum** -> **Posts and Topics** -> **Censored Words** page, a checkbox is added beside each line to indicate whether the word specified is searched for on a whole-word basis or not.
 
-[color=blue][b][size=12pt][u]Related Discussion[/u][/size][/b][/color]
-o [url=http://www.simplemachines.org/community/index.php?topic=544262.0]Selective Whole-Word Checking for Censor[/url]
+## Related Discussion
 
-[color=blue][b][size=12pt][u]Compatibility Notes[/u][/size][/b][/color]
+- [Selective Whole-Word Checking for Censor](http://www.simplemachines.org/community/index.php?topic=544262.0)
+
+## Compatibility Notes
 This mod was tested on SMF 2.0.11 and 2.1 Beta 3, but should work on SMF 2.0 and up.  SMF 1.x is not and will not be supported.  
 
-[color=blue][b][size=12pt][u]Changelog[/u][/size][/b][/color]
-The changelog can be viewed at [url=http://www.xptsp.com/board/free-modifications/selective-whole-word-censor/?tab=1]XPtsp.com[/url].
+## Changelog
+The changelog can be viewed at [XPtsp.com](http://www.xptsp.com/board/free-modifications/selective-whole-word-censor/?tab=1).
 
-[color=blue][b][size=12pt][u]License[/u][/size][/b][/color]
+## License
 Copyright (c) 2016 - 2018, Douglas Orend
+
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:

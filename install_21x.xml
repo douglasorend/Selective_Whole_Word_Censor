@@ -3,7 +3,7 @@
 <modification xmlns="http://www.simplemachines.org/xml/modification" xmlns:smf="http://www.simplemachines.org/">
 <id>Dougiefresh:SelectiveCensor</id>
 <name>Selective Whole-Word Checking for Censor</name>
-<version>1.1</version>
+<version>1.2</version>
 
 <!-------------------------------------------------------------------------->
 <!-- Source file modifications                                            -->
@@ -37,11 +37,17 @@
 	</operation>
 	<operation>
 		<search position="replace"><![CDATA[if (empty($modSettings['censorWholeWord']))
-		$text = empty($modSettings['censorIgnoreCase']) ? str_ireplace($censor_vulgar, $censor_proper, $text) : str_replace($censor_vulgar, $censor_proper, $text);
+	{
+		$func = !empty($modSettings['censorIgnoreCase']) ? 'str_ireplace' : 'str_replace';
+		$text = $func($censor_vulgar, $censor_proper, $text);
+	}
 	else
 		$text = preg_replace($censor_vulgar, $censor_proper, $text);]]></search>
 		<add><![CDATA[if (!empty($censor_vulgar))
-		$text = empty($modSettings['censorIgnoreCase']) ? str_ireplace($censor_vulgar, $censor_proper, $text) : str_replace($censor_vulgar, $censor_proper, $text);
+	{
+		$func = !empty($modSettings['censorIgnoreCase']) ? 'str_ireplace' : 'str_replace';
+		$text = $func($censor_vulgar, $censor_proper, $text);
+	}
 	if (!empty($whole_vulgar))
 		$text = preg_replace($whole_vulgar, $whole_proper, $text);]]></add>
 	</operation>

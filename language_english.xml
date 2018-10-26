@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!DOCTYPE modification SYSTEM "http://www.simplemachines.org/xml/modification">
+<modification xmlns="http://www.simplemachines.org/xml/modification" xmlns:smf="http://www.simplemachines.org/">
+<id>Dougiefresh:AnonymousPost</id>
+<name>Post Anonymously In Topic</name>
+<version>1.1</version>
+
+<file name="$languagedir/Admin.english.php">
+	<operation>
+		<search position="end" />
+		<add><![CDATA[
+$txt['admin_censored_checkbox'] = 'Tick the checkbox in order to check the whole word.';
+]]></add>
+	</operation>
+</file>
+</modification>

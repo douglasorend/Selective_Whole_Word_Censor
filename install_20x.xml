@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<!DOCTYPE modification SYSTEM "http://www.simplemachines.org/xml/modification">
+<modification xmlns="http://www.simplemachines.org/xml/modification" xmlns:smf="http://www.simplemachines.org/">
+<id>Dougiefresh:SelectiveCensor</id>
+<name>Selective Whole-Word Checking for Censor</name>
+<version>1.0</version>
+
+<!-------------------------------------------------------------------------->
+<!-- Source file modifications                                            -->
+<!-------------------------------------------------------------------------->
+<file name="$sourcedir/Load.php">
+	<!-- censorText function -->
+	<operation>
+		<search position="before"><![CDATA[static $censor_vulgar = null, $censor_proper]]></search>
+		<add><![CDATA[, $censor_whole]]></add>
+	</operation>
+	<operation>
+		<search position="before"><![CDATA[$censor_proper = explode("\n", $modSettings['censor_proper']);]]></search>
+		<add><![CDATA[
+		$censor_whole = explode("\n", $modSettings['censor_whole']);]]></add>
+	</operation>
+	<operation>
+		<search position="replace"><![CDATA[$censor_vulgar[$i] = (empty($modSettings['censorWholeWord'])]]></search>
+		<add><![CDATA[$censor_vulgar[$i] = (empty($censor_whole[$i])]]></add>
+	</operation>
+</file>
+<file name="$sourcedir/ManagePosts.php">
+	<!-- SetCensor function -->
+	<operation>
+		<search position="before"><![CDATA[$censored_proper = $_POST['censor_proper'];]]></search>
+		<add><![CDATA[
+				$censored_temp = $_POST['censor_whole'];]]></add>
+	</operation>
+	<operation>
+		<search position="before"><![CDATA[$censored_proper = explode("\n", strtr($_POST['censor_proper'], array("\r" => '')));]]></search>
+		<add><![CDATA[
+				$censored_temp = explode("\n", strtr($_POST['censor_whole'], array("\r" => '')));]]></add>
+	</operation>
+	<operation>
+		<search position="after"><![CDATA[// Set the new arrays and settings in the database.]]></search>
+		<add><![CDATA[// Build the "whole censored word" flag array:
+		$censored_whole = array();
+		foreach ($censored_vulgar as $i => $value)
+			$censored_whole[$i] = '0';
+		foreach ($censored_temp as $i)
+			$censored_whole[$i] = '1';
+
+		]]></add>
+	</operation>
+	<operation>
+		<search position="before"><![CDATA['censor_proper' => implode("\n", $censored_proper),]]></search>
+		<add><![CDATA[
+			'censor_whole' => implode("\n", $censored_whole),]]></add>
+	</operation>
+	<operation>
+		<search position="before"><![CDATA[$censor_proper = explode("\n", $modSettings['censor_proper']);]]></search>
+		<add><![CDATA[
+	$censor_whole = explode("\n", $modSettings['censor_whole']);]]></add>
+	</operation>
+	<operation>
+		<search position="replace"><![CDATA[$context['censored_words'][htmlspecialchars(trim($censor_vulgar[$i]))] = isset($censor_proper[$i]) ? htmlspecialchars($censor_proper[$i]) : '';]]></search>
+		<add><![CDATA[$context['censored_words'][] = array(
+			'vulgar' => htmlspecialchars(trim($censor_vulgar[$i])),
+			'proper' => isset($censor_proper[$i]) ? htmlspecialchars($censor_proper[$i]) : '',
+			'whole' => !empty($censor_whole[$i]),
+		);]]></add>
+	</operation>
+</file>
+
+<!-------------------------------------------------------------------------->
+<!-- Theme file modifications                                             -->
+<!-------------------------------------------------------------------------->
+<file name="$themedir/Admin.template.php">
+	<!-- template_edit_censored function -->
+	<operation>
+		<search position="before"><![CDATA[<p>', $txt['admin_censored_where'], ]]></search>
+		<add><![CDATA['  ', $txt['admin_censored_checkbox'], ]]></add>
+	</operation>
+	<operation>
+		<search position="replace"><![CDATA[foreach ($context['censored_words'] as $vulgar => $proper)]]></search>
+		<add><![CDATA[foreach ($context['censored_words'] as $i => $word)]]></add>
+	</operation>
+	<operation>
+		<search position="replace"><![CDATA[<input type="text" name="censor_vulgar[]" value="', $vulgar, '" size="20" /> => <input type="text" name="censor_proper[]" value="', $proper, '" size="20" /></div>]]></search>
+		<add><![CDATA[<input type="text" name="censor_vulgar[]" value="', $word['vulgar'], '" size="20" /> => <input type="text" name="censor_proper[]" value="', $word['proper'], '" size="20" /> <input type="checkbox" name="censor_whole[]" value="', $i, '" ', empty($word['whole']) ? '' : ' checked="checked"', ' class="input_check" /></div>]]></add>
+	</operation>
+	<operation>
+		<search position="before"><![CDATA[<input type="text" name="censor_proper[]" size="20" class="input_text" />]]></search>
+		<add><![CDATA[ <input type="checkbox" name="censor_whole[]" value="', count($context['censored_words']) + 1, '" class="input_check" />]]></add>
+	</operation>
+	<operation>
+		<search position="before"><![CDATA[<hr width="100%" size="1" class="hrcolor clear" />
+					<dl class="settings">]]></search>
+		<add><![CDATA['; /* Start Selective Word Censor]]></add>
+	</operation>
+	<operation>
+		<search position="after"><![CDATA[
+						<dt>
+							<strong><label for="censorIgnoreCase_check">', $txt['censor_case'], ':</label></strong>]]></search>
+		<add><![CDATA[ /* End Selective Word Censor */
+	echo ']]></add>
+	</operation>
+	<operation>
+		<search position="before"><![CDATA[document.getElementById("moreCensoredWords_link").style.display = ""; ]]></search>
+		<add><![CDATA[
+						var censored_count = ', count($context['censored_words']), ';]]></add>
+	</operation>
+	<operation>
+		<search position="replace"><![CDATA[<input type="text" name="censor_proper[]" size="20" class="input_text" /><\' + \'/div><div id="moreCensoredWords"><\' + \'/div>\');]]></search>
+		<add><![CDATA[<input type="text" name="censor_proper[]" size="20" class="input_text" /> <input type="checkbox" name="censor_whole[]" value="\' + censored_count + \'" class="input_check" /><\' + \'/div><div id="moreCensoredWords"><\' + \'/div>\');
+							censored_count = censored_count + 1;]]></add>
+	</operation>
+	
+</file>
+</modification>

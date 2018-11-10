@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!DOCTYPE modification SYSTEM "http://www.simplemachines.org/xml/modification">
+<modification xmlns="http://www.simplemachines.org/xml/modification" xmlns:smf="http://www.simplemachines.org/">
+<id>Dougiefresh:SelectiveCensor</id>
+<name>Selective Whole-Word Checking for Censor</name>
+<version>1.4</version>
+
+<!-------------------------------------------------------------------------->
+<!-- Language file edits (Spanish Latin - Rock Lee)                       -->
+<!-------------------------------------------------------------------------->
+
+<file name="$languagedir/Admin.spanish_latin.php" error="skip">
+	<operation>
+		<search position="end" />
+		<add><![CDATA[
+$txt['admin_censored_checkbox'] = 'Marque la casilla de verificaci&oacute;n con el fin de comprobar la palabra entera.';
+]]></add>
+	</operation>
+</file>
+<file name="$languagedir/Admin.spanish_latin-utf8.php" error="skip">
+	<operation>
+		<search position="end" />
+		<add><![CDATA[
+$txt['admin_censored_checkbox'] = 'Marque la casilla de verificación con el fin de comprobar la palabra entera.';
+]]></add>
+	</operation>
+</file>
+</modification>

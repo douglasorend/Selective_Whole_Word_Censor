@@ -1,6 +1,6 @@
 -------
 
-# SELECTIVE WHOLE WORD CENSOR v1.3
+# SELECTIVE WHOLE WORD CENSOR v1.4
 
 [**By Dougiefresh**](http://www.simplemachines.org/community/index.php?action=profile;u=253913) -> [Link to Mod](http://custom.simplemachines.org/mods/index.php?mod=4100)
 
